@@ -4,100 +4,128 @@ import torch.optim as optim
 from PIL import Image
 import torchvision.transforms as transforms
 import torchvision.models as models
-import matplotlib.pyplot as plt
 import os
 
-# Load image and resize
+# -----------------------------
+# PATHS (WORKS WITH YOUR FOLDER)
+# -----------------------------
+CONTENT_IMG_PATH = "images/content/content.jpg"
+STYLE_IMG_PATH = "images/style/style.jpg"
+OUTPUT_IMG_PATH = "images/output/output.jpg"
+
+
+# -----------------------------
+# LOAD IMAGE FUNCTION
+# -----------------------------
 def load_image(image_path, max_size=512):
     image = Image.open(image_path).convert("RGB")
+
     size = max(image.size)
     if size > max_size:
-        size = max_size
+        scale = max_size / size
+        new_w = int(image.size[0] * scale)
+        new_h = int(image.size[1] * scale)
+        image = image.resize((new_w, new_h))
 
-    transform = transforms.Compose([
-        transforms.Resize((size, size)),
-        transforms.ToTensor()
-    ])
-
+    transform = transforms.ToTensor()
     image = transform(image).unsqueeze(0)
-    return image.to(device)
-
-# Convert tensor to displayable image
-def im_convert(tensor):
-    image = tensor.clone().detach().cpu().numpy().squeeze()
-    image = image.transpose(1, 2, 0)
     return image
 
-# Style loss using Gram matrix
-def gram_matrix(tensor):
-    b, c, h, w = tensor.size()
-    tensor = tensor.view(c, h * w)
-    gram = torch.mm(tensor, tensor.t())
-    return gram
 
-# Device configuration
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# -----------------------------
+# LOAD VGG MODEL
+# -----------------------------
+def get_vgg_layers():
+    vgg = models.vgg19(weights=models.VGG19_Weights.DEFAULT).features
+    for param in vgg.parameters():
+        param.requires_grad = False
+    return vgg
 
-# Load content and style images
-content_path = "./images/content/content.jpg"
-style_path = "./images/style/style.jpg"
 
-content = load_image(content_path)
-style = load_image(style_path)
+# -----------------------------
+# STYLE TRANSFER (MAIN)
+# -----------------------------
+def run_style_transfer():
 
-# Load pretrained VGG19 model
-vgg = models.vgg19(pretrained=True).features.to(device).eval()
+    # Load content & style images
+    content = load_image(CONTENT_IMG_PATH)
+    style = load_image(STYLE_IMG_PATH)
 
-# Freeze weights
-for param in vgg.parameters():
-    param.requires_grad = False
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    content = content.to(device)
+    style = style.to(device)
 
-content_layers = ['conv4_2']
-style_layers = ['conv1_1', 'conv2_1', 'conv3_1', 'conv4_1', 'conv5_1']
+    vgg = get_vgg_layers().to(device)
 
-# Extract features
-def get_features(image, model):
-    features = {}
-    x = image
+    # Layers to use
+    style_layers = [0, 5, 10, 19, 28]
+    content_layer = 21
 
-    layer_map = {
-        "0": "conv1_1", "5": "conv2_1", "10": "conv3_1",
-        "19": "conv4_1", "21": "conv4_2", "28": "conv5_1"
-    }
+    # Extract features
+    def get_features(image):
+        features = []
+        x = image
+        for i, layer in enumerate(vgg):
+            x = layer(x)
+            if i in style_layers or i == content_layer:
+                features.append(x)
+        return features
 
-    for name, layer in model._modules.items():
-        x = layer(x)
-        if name in layer_map:
-            features[layer_map[name]] = x
+    style_features = get_features(style)
+    content_features = get_features(content)
 
-    return features
+    # Gram matrix (for style)
+    def gram_matrix(tensor):
+        _, c, h, w = tensor.size()
+        tensor = tensor.view(c, h * w)
+        gram = torch.mm(tensor, tensor.t())
+        return gram
 
-content_features = get_features(content, vgg)
-style_features = get_features(style, vgg)
+    style_grams = [gram_matrix(feat) for feat in style_features]
 
-# Compute Gram matrices for style layers
-style_grams = {layer: gram_matrix(style_features[layer]) for layer in style_layers}
+    # Generated image
+    generated = content.clone().requires_grad_(True)
+    optimizer = optim.Adam([generated], lr=0.02)
 
-# Create target image
-target = content.clone().requires_grad_(True).to(device)
+    # Weights
+    style_weight = 1e6
+    content_weight = 1
 
-# Set weights
-style_weight = 1e6
-content_weight = 1
+    # Training loop
+    for step in range(300):
+        generated_features = get_features(generated)
 
-optimizer = optim.Adam([target], lr=0.003)
-steps = 2000
+        content_loss = torch.mean((generated_features[-1] - content_features[-1]) ** 2)
 
-print("Running style transfer...")
+        style_loss = 0
+        for gf, sg in zip(generated_features[:-1], style_grams):
+            gm = gram_matrix(gf)
+            style_loss += torch.mean((gm - sg) ** 2)
 
-for i in range(1, steps+1):
+        total_loss = content_weight * content_loss + style_weight * style_loss
 
-    target_features = get_features(target, vgg)
+        optimizer.zero_grad()
+        total_loss.backward()
+        optimizer.step()
 
-    content_loss = torch.mean((target_features['conv4_2'] - content_features['conv4_2'])**2)
+        if step % 50 == 0:
+            print(f"Step {step}, Loss: {total_loss.item()}")
 
-    style_loss = 0
-    for layer in style_layers:
-        target_feature = target_features[layer]
-        target_gram = gram_matrix(target_feature)
-        style_gram = style_grams[laye]()
+    # Save output
+    generated = generated.cpu().clone().squeeze(0)
+    generated = transforms.ToPILImage()(generated)
+    generated.save(OUTPUT_IMG_PATH)
+
+    print("\nStyle Transfer Completed!")
+    print(f"Image saved at: {OUTPUT_IMG_PATH}")
+
+
+# -----------------------------
+# MAIN
+# -----------------------------
+if __name__ == "__main__":
+    # Create output folder if not exists
+    if not os.path.exists("images/output"):
+        os.makedirs("images/output")
+
+    run_style_transfer()
