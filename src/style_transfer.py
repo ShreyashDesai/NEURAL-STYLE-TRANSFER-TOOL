@@ -1,122 +1,103 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torchvision import models, transforms
 from PIL import Image
+import torchvision.transforms as transforms
+import torchvision.models as models
 import matplotlib.pyplot as plt
 import os
 
-# --------------------------
-# IMAGE LOADING + TRANSFORM
-# --------------------------
+# Load image and resize
 def load_image(image_path, max_size=512):
-    image = Image.open(image_path).convert('RGB')
+    image = Image.open(image_path).convert("RGB")
+    size = max(image.size)
+    if size > max_size:
+        size = max_size
 
-    size = max(max(image.size), max_size)
     transform = transforms.Compose([
-        transforms.Resize((512, 512)),
+        transforms.Resize((size, size)),
         transforms.ToTensor()
     ])
 
     image = transform(image).unsqueeze(0)
+    return image.to(device)
+
+# Convert tensor to displayable image
+def im_convert(tensor):
+    image = tensor.clone().detach().cpu().numpy().squeeze()
+    image = image.transpose(1, 2, 0)
     return image
 
-
-# --------------------------
-# VGG19 FEATURE EXTRACTION
-# --------------------------
-class VGGFeatures(nn.Module):
-    def __init__(self):
-        super(VGGFeatures, self).__init__()
-        vgg = models.vgg19(weights=models.VGG19_Weights.DEFAULT).features
-
-        self.layers = {
-            '0': 'conv1_1',
-            '5': 'conv2_1',
-            '10': 'conv3_1',
-            '19': 'conv4_1',
-            '21': 'conv4_2',  # content layer
-            '28': 'conv5_1'
-        }
-
-        self.model = vgg[:29]
-
-    def forward(self, x):
-        features = {}
-        for name, layer in self.model._modules.items():
-            x = layer(x)
-            if name in self.layers:
-                features[self.layers[name]] = x
-        return features
-
-
-# --------------------------
-# GRAM MATRIX (STYLE CALC)
-# --------------------------
+# Style loss using Gram matrix
 def gram_matrix(tensor):
     b, c, h, w = tensor.size()
-    features = tensor.view(c, h * w)
-    gram = torch.mm(features, features.t())
+    tensor = tensor.view(c, h * w)
+    gram = torch.mm(tensor, tensor.t())
     return gram
 
+# Device configuration
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# --------------------------
-# MAIN STYLE TRANSFER FUNCTION
-# --------------------------
-def style_transfer(content_path, style_path, output_path, steps=300, lr=0.003):
+# Load content and style images
+content_path = "./images/content/content.jpg"
+style_path = "./images/style/style.jpg"
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+content = load_image(content_path)
+style = load_image(style_path)
 
-    content = load_image(content_path).to(device)
-    style = load_image(style_path).to(device)
+# Load pretrained VGG19 model
+vgg = models.vgg19(pretrained=True).features.to(device).eval()
 
-    target = content.clone().requires_grad_(True)
+# Freeze weights
+for param in vgg.parameters():
+    param.requires_grad = False
 
-    model = VGGFeatures().to(device)
+content_layers = ['conv4_2']
+style_layers = ['conv1_1', 'conv2_1', 'conv3_1', 'conv4_1', 'conv5_1']
 
-    optimizer = optim.Adam([target], lr=lr)
+# Extract features
+def get_features(image, model):
+    features = {}
+    x = image
 
-    for step in range(steps):
-        target_features = model(target)
-        content_features = model(content)
-        style_features = model(style)
+    layer_map = {
+        "0": "conv1_1", "5": "conv2_1", "10": "conv3_1",
+        "19": "conv4_1", "21": "conv4_2", "28": "conv5_1"
+    }
 
-        # Content loss
-        content_loss = torch.mean(
-            (target_features['conv4_2'] - content_features['conv4_2']) ** 2
-        )
+    for name, layer in model._modules.items():
+        x = layer(x)
+        if name in layer_map:
+            features[layer_map[name]] = x
 
-        # Style loss
-        style_loss = 0
-        for layer in ['conv1_1', 'conv2_1', 'conv3_1', 'conv4_1', 'conv5_1']:
-            target_gram = gram_matrix(target_features[layer])
-            style_gram = gram_matrix(style_features[layer])
-            style_loss += torch.mean((target_gram - style_gram) ** 2)
+    return features
 
-        total_loss = content_loss + 1e4 * style_loss
+content_features = get_features(content, vgg)
+style_features = get_features(style, vgg)
 
-        optimizer.zero_grad()
-        total_loss.backward()
-        optimizer.step()
+# Compute Gram matrices for style layers
+style_grams = {layer: gram_matrix(style_features[layer]) for layer in style_layers}
 
-        if step % 50 == 0:
-            print(f"STEP {step}/{steps}   LOSS: {total_loss.item():.4f}")
+# Create target image
+target = content.clone().requires_grad_(True).to(device)
 
-    # SAVE OUTPUT
-    save_image = target.squeeze().detach().cpu()
-    save_image = transforms.ToPILImage()(save_image)
-    save_image.save(output_path)
+# Set weights
+style_weight = 1e6
+content_weight = 1
 
-    print(f"\nOutput saved to: {output_path}")
+optimizer = optim.Adam([target], lr=0.003)
+steps = 2000
 
+print("Running style transfer...")
 
-# --------------------------
-# RUN DIRECTLY (EXAMPLE COMMAND)
-# --------------------------
-if __name__ == "__main__":
-    content = "images/content/content.jpg"
-    style = "images/style/style.jpg"
-    output = "images/output/styled.jpg"
+for i in range(1, steps+1):
 
-    style_transfer(content, style, output)
+    target_features = get_features(target, vgg)
 
+    content_loss = torch.mean((target_features['conv4_2'] - content_features['conv4_2'])**2)
+
+    style_loss = 0
+    for layer in style_layers:
+        target_feature = target_features[layer]
+        target_gram = gram_matrix(target_feature)
+        style_gram = style_grams[laye]()
