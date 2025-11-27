@@ -1,7 +1,7 @@
 🎨 NEURAL STYLE TRANSFER TOOL
+CodTech IT Solutions Internship Project
 
-Company: CodTech IT Solutions
-Name: Shreyash Nhanu Desai
+Author: Shreyash Nhanu Desai
 Intern ID: CT04DR1291
 Domain: Artificial Intelligence
 Duration: 4 Weeks
@@ -9,51 +9,39 @@ Mentor: Neela Santosh
 
 📘 Project Overview
 
-The Neural Style Transfer (NST) project uses Deep Learning to apply the artistic style of one image (e.g., a painting) onto another image (e.g., a photograph).
+The Neural Style Transfer (NST) project applies the artistic style of one image (painting) onto another image (photograph).
+It uses Deep Learning, Convolutional Neural Networks (CNNs), and the pretrained VGG19 model to merge:
 
-This technique uses Convolutional Neural Networks (CNNs) and pretrained models such as VGG19 to merge content and style into a stylized output image.
+Content (structure of the image)
 
-This project demonstrates the power of Computer Vision, Feature Extraction, and Optimization within modern AI systems.
+Style (textures, brush strokes, colors)
+
+This project demonstrates the power of computer vision, feature extraction, and neural optimization.
 
 🚀 Features
 
-🖼️ Apply artistic style to any photograph
+🖼️ Apply any artistic style to any photograph
 
-⚙️ Uses pretrained VGG19 deep learning model
+⚡ Uses pretrained VGG19 model
 
 🔁 Supports multiple style images
 
-💾 Saves output images
+💾 Automatically saves output images
 
-💻 Implemented in a clean and simple Python Notebook
+💻 Clean, beginner-friendly Python Notebook
 
-📊 Includes visual examples and comparisons
+📊 Includes visual comparisons of content, style & output
 
 🛠️ Technologies Used
 Category	Technology
 Language	Python
-Libraries	torch, torchvision, PIL, matplotlib
+Libraries	torch, torchvision, Pillow, matplotlib
 Model	Pretrained VGG19
 Algorithm	Gatys' Neural Style Transfer
-🖥️ How Neural Style Transfer Works
-
-NST is based on the concept of separating and recombining:
-
-Content representation — shapes & structures of the content image
-
-Style representation — brush strokes, colors & textures of the style image
-
-Using a loss function:
-
-Content Loss measures similarity to the content image
-
-Style Loss uses Gram matrices to measure texture similarity
-
-The model uses gradient descent to iteratively update pixels of the output image.
-
 📂 Project Structure
 Neural-Style-Transfer/
 │── style_transfer.ipynb
+│── neural_style_transfer.py
 │── content/
 │     └── content.jpg
 │── style/
@@ -63,58 +51,101 @@ Neural-Style-Transfer/
 │── README.md
 └── requirements.txt
 
-💻 How to Run
-🪜 Step 1 — Install Python
+🧰 Installation & Setup Guide
+Follow these steps exactly — even a complete beginner can do it.
+🪜 Step 1 — Install Git
 
-Download from:
+Git is required to clone the repository.
+
+🔽 Download Git
+
+👉 https://git-scm.com/downloads
+
+✔ Check installation
+
+Open Command Prompt / PowerShell and run:
+
+git --version
+
+
+If it shows a version, Git is installed correctly.
+
+🪜 Step 2 — Install Python
+
+Download Python 3.10+ from:
 👉 https://www.python.org/downloads/
 
-Check:
+⚠ IMPORTANT
+On the installer screen, CHECK the option:
 
+✔ Add Python to PATH
+
+Verify installation:
 python --version
 pip --version
 
-🪜 Step 2 — Install Dependencies
+🪜 Step 3 — Clone the Repository
+
+Run this command:
+
+git clone https://github.com/ShreyashDesai/Neural-Style-Transfer.git
+
+
+Then enter the folder:
+
+cd Neural-Style-Transfer
+
+🪜 Step 4 — Install Required Libraries
+
+Install all dependencies using:
+
+pip install -r requirements.txt
+
+
+If you want to install manually:
+
 pip install torch torchvision pillow matplotlib
 
-🪜 Step 3 — Run the Notebook
+🪜 Step 5 — Run the Project
+▶ Option 1: Run the Notebook
 jupyter notebook style_transfer.ipynb
 
-
-Or run the script version:
-
+▶ Option 2: Run the Python Script
 python neural_style_transfer.py
 
-🧩 Example Output
 
-Content Image:
-A regular photograph.
+Your output image will be saved inside:
 
-Style Image:
-A famous painting.
+results/output.png
 
-Result:
-A stylized image combining the content of the photograph with the artistic style of the painting.
+🧠 How Neural Style Transfer Works
 
+NST separates and recombines:
+
+🟦 Content Representation
+
+Shapes, edges, and structure of the main image.
+
+🟧 Style Representation
+
+Textures, color patterns, brush strokes from the style image.
+
+The model computes:
+
+Content Loss → Keep structure similar
+
+Style Loss → Match color & texture patterns
+
+Total Loss = Content Loss + Style Loss
+
+The output image is updated using gradient descent until the style is transferred.
+
+🖼 Example Output
 <p align="center"> <img src="https://github.com/user-attachments/assets/cbf5cc21-682d-49d5-945b-f70e17b89c73" width="80%" /> </p>
-🧠 Model Information
+📧 Contact
 
-Model Used:
-📌 VGG19 (pretrained on ImageNet)
-Used for extracting both:
-
-High-level content features
-
-Low-level style features
-
-NST uses only feature maps — the model weights remain frozen.
-
-👨‍💻 Author
-
-Shreyash Nhanu Desai
-Intern at CodTech IT Solutions
-
-📧 Email: sheyashsn.desai@gmail.com
+Author: Shreyash Nhanu Desai
+📩 Email: sheyashsn.desai@gmail.com
 
 🔗 GitHub: https://github.com/ShreyashDesai
 
@@ -122,4 +153,4 @@ Intern at CodTech IT Solutions
 
 🏁 Acknowledgements
 
-I sincerely thank CodTech IT Solutions and my mentor Neela Santosh for their guidance throughout this internship and for providing me the opportunity to work on this exciting deep learning project.
+Special thanks to CodTech IT Solutions and my mentor Neela Santosh for providing guidance and support throughout this internship.
