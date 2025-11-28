@@ -141,7 +141,7 @@ Total Loss = Content Loss + Style Loss
 The output image is updated using gradient descent until the style is transferred.
 
 🖼 Example Output
-<p align="center"> <img src="https://github.com/user-attachments/assets/cbf5cc21-682d-49d5-945b-f70e17b89c73" width="80%" /> </p>
+<img width="1801" height="610" alt="Image" src="https://github.com/user-attachments/assets/413eb1de-bd9e-4603-9af6-d5ceb21e011c" />
 📧 Contact
 
 Author: Shreyash Nhanu Desai
