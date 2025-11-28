@@ -1,12 +1,18 @@
 🎨 NEURAL STYLE TRANSFER TOOL
 CodTech IT Solutions – Internship Project (Artificial Intelligence)
+--
 
 Author: Shreyash Nhanu Desai
+
 Intern ID: CT04DR1291
+
 Domain: Artificial Intelligence
+
 Duration: 4 Weeks
+
 Mentor: Neela Santosh
 
+--
 📘 Project Overview
 
 Neural Style Transfer (NST) is a deep learning technique that blends the content of one image with the artistic style of another.
