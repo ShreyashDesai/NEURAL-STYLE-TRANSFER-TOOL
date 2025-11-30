@@ -113,7 +113,7 @@ jupyter notebook style_transfer.ipynb
 
 ▶ Option 2: Run the Python Script
 
-python neural_style_transfer.py
+python src/neural_style_transfer.py
 --
 
 The final styled image will be saved here:
