@@ -42,6 +42,8 @@ Language	Python
 Libraries	torch, torchvision, Pillow, matplotlib
 Model	Pretrained VGG19
 Algorithm	Gatys' Neural Style Transfer
+
+
 📂 Project Structure
 Neural-Style-Transfer/
 │── style_transfer.ipynb
