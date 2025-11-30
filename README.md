@@ -102,8 +102,10 @@ or install manually:
 pip install torch torchvision pillow matplotlib
 
 🪜 Step 5 — Run the Project
+
 ▶ Option 1: Run Jupyter Notebook
 jupyter notebook style_transfer.ipynb
+
 
 ▶ Option 2: Run the Python Script
 python neural_style_transfer.py
