@@ -88,6 +88,7 @@ python --version
 pip --version
 
 🪜 Step 3 — Clone the Repository
+--
 git clone https://github.com/ShreyashDesai/NEURAL-STYLE-TRANSFER-TOOL.git
 cd NEURAL-STYLE-TRANSFER-TOOL
 --
