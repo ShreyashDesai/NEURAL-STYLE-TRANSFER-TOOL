@@ -60,7 +60,7 @@ Neural-Style-Transfer/
 🧰 Installation & Setup Guide
 
 Follow these steps carefully — this setup is designed so even a complete beginner can run the project easily.
-
+--
 🪜 Step 1 — Install Git
 
 Git is required to clone the repository.
@@ -71,12 +71,13 @@ Git is required to clone the repository.
 Check installation:
 
 git --version
+--
 
 🪜 Step 2 — Install Python
 
 Download Python 3.10+
 👉 https://www.python.org/downloads/
-
+--
 ⚠ Important:
 On the installer screen, check this box:
 ✔ Add Python to PATH
@@ -89,7 +90,7 @@ pip --version
 🪜 Step 3 — Clone the Repository
 git clone https://github.com/ShreyashDesai/NEURAL-STYLE-TRANSFER-TOOL.git
 cd NEURAL-STYLE-TRANSFER-TOOL
-
+--
 🪜 Step 4 — Install Required Libraries
 
 Install all dependencies:
@@ -100,7 +101,7 @@ pip install -r requirements.txt
 or install manually:
 
 pip install torch torchvision pillow matplotlib
-
+--
 🪜 Step 5 — Run the Project
 
 ▶ Option 1: Run Jupyter Notebook
