@@ -3,10 +3,15 @@ CodTech IT Solutions – Internship Project (Artificial Intelligence)
 --
 
 Author: Shreyash Nhanu Desai
+--
 Intern ID: CT04DR1291
+--
 Domain: Artificial Intelligence
+--
 Duration: 4 Weeks
+--
 Mentor: Neela Santosh
+--
 
 --
 📘 Project Overview
