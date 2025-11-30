@@ -3,13 +3,9 @@ CodTech IT Solutions – Internship Project (Artificial Intelligence)
 --
 
 Author: Shreyash Nhanu Desai
-
 Intern ID: CT04DR1291
-
 Domain: Artificial Intelligence
-
 Duration: 4 Weeks
-
 Mentor: Neela Santosh
 
 --
@@ -84,8 +80,8 @@ python --version
 pip --version
 
 🪜 Step 3 — Clone the Repository
-git clone https://github.com/ShreyashDesai/Neural-Style-Transfer.git
-cd Neural-Style-Transfer
+git clone https://github.com/ShreyashDesai/NEURAL-STYLE-TRANSFER-TOOL.git
+cd NEURAL-STYLE-TRANSFER-TOOL
 
 🪜 Step 4 — Install Required Libraries
 
