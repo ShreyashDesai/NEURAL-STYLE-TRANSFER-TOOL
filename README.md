@@ -152,7 +152,9 @@ The output image is iteratively updated using gradient descent until the desired
 
 📧 Contact
 
-Author: Shreyash Nhanu Desai
+Author: 
+Shreyash Nhanu Desai
+
 📩 Email: sheyashsn.desai@gmail.com
 
 🔗 GitHub: https://github.com/ShreyashDesai
